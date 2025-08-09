@@ -1,43 +1,32 @@
-// backend/server.js
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
+
+// Load environment variables from .env file
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-app.use(cors({ origin: "http://localhost:5173" }));
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-let leads = [];
-
-app.post("/api/leads", (req, res) => {
-  console.log("📩 Incoming request body:", req.body);
-  const { name, email, phone, businessType, message } = req.body;
-
-  if (!name || !email || !phone || !businessType) {
-    return res.status(400).json({ success: false, message: "All fields required" });
-  }
-
-  const newLead = {
-    id: leads.length + 1,
-    name,
-    email,
-    phone,
-    businessType,
-    message: message || "",
-    createdAt: new Date().toISOString(),
-  };
-
-  leads.push(newLead);
-  console.log("✅ New lead saved:", newLead);
-
-  res.json({ success: true, message: "Lead captured successfully", lead: newLead });
+// Routes
+app.get("/", (req, res) => {
+  res.send("Backend is running successfully 🚀");
 });
 
-app.get("/api/leads", (req, res) => {
-  res.json(leads);
+// Example API endpoint
+app.post("/api/form", (req, res) => {
+  const { name, email } = req.body;
+  console.log("Form Data Received:", { name, email });
+  res.json({ success: true, message: "Form submitted successfully!" });
 });
 
+// Get port from .env or default to 5000
+const PORT = process.env.PORT || 5000;
+
+// Start server
 app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
+  console.log(`✅ Server running on http://localhost:${PORT}`);
 });
